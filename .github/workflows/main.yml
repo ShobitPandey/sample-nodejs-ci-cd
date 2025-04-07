@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: Node.js CI/CD with Docker
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -16,7 +16,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: 18
 
       - name: Install dependencies
         run: npm install
@@ -24,20 +24,26 @@ jobs:
       - name: Run tests
         run: npm test
 
-      - name: Log in to DockerHub
+      - name: Docker logout (just in case)
+        run: docker logout || true
+
+      - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Disable Docker Buildx (if auto-enabled)
-        run: |
-          docker buildx rm default || true
+      - name: Remove Docker buildx if interfering
+        run: docker buildx rm default || true
 
-      - name: Build Docker image (classic)
+      - name: Build Docker image
         run: |
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/nodejs-app:latest .
+          IMAGE="${{ secrets.DOCKERHUB_USERNAME }}/nodejs-app:latest"
+          echo "Building image: $IMAGE"
+          docker build -t $IMAGE .
 
       - name: Push Docker image
         run: |
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/nodejs-app:latest
+          IMAGE="${{ secrets.DOCKERHUB_USERNAME }}/nodejs-app:latest"
+          echo "Pushing image: $IMAGE"
+          docker push $IMAGE
