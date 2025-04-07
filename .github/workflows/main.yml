@@ -30,8 +30,14 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build Docker image
-        run: docker build --progress=plain -t ${{ secrets.DOCKERHUB_USERNAME }}/nodejs-app:latest .
+      - name: Disable Docker Buildx (if auto-enabled)
+        run: |
+          docker buildx rm default || true
+
+      - name: Build Docker image (classic)
+        run: |
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/nodejs-app:latest .
 
       - name: Push Docker image
-        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/nodejs-app:latest
+        run: |
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/nodejs-app:latest
