@@ -30,7 +30,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build Docker image
-        run: docker build -t nodejs-app:latest .
+        run: docker build -t shobitpandey18/nodejs-app:latest .
 
       - name: Push Docker image
-        run: docker push nodejs-app:latest
+        run: docker push shobitpandey18/nodejs-app:latest
