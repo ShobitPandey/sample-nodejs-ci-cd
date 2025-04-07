@@ -31,8 +31,8 @@ jobs:
 
       - name: Build Docker image
         run: |
-          IMAGE=${{ secrets.DOCKERHUB_USERNAME }}/nodejs-app:latest
-          docker build -t $IMAGE .
+          IMAGE="${{ secrets.DOCKERHUB_USERNAME }}/nodejs-app:latest"
+          docker build -t "$IMAGE" .
 
       - name: Push Docker image
         run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/nodejs-app:latest
